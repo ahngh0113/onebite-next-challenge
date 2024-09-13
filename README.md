@@ -166,6 +166,11 @@
 
   ```
 </details>
+
+<details>
+  <summary>App Router</summary>
+  <hr/>
+</details>
 <br>
 
 # global layout by page
@@ -219,3 +224,8 @@
   };
   ```
 </details>
+<details>
+  <summary>App Router</summary>
+  <hr/>
+</details>
+<br>
