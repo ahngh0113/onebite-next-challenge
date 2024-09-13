@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 
 import style from "@/components/searchable-layout.module.css";
@@ -22,6 +22,17 @@ function SearchableLayout({ children }: { children: React.ReactNode }) {
 
     router.push(`/search?q=${value}`);
   };
+
+  useEffect(() => {
+    const q = router.query.q as string;
+    if (q && inputRef.current) {
+      inputRef.current.value = q;
+    }
+
+    if (!q && inputRef.current) {
+      inputRef.current.value = "";
+    }
+  }, [router]);
 
   return (
     <div>
