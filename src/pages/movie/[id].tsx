@@ -9,6 +9,16 @@ import style from "./[id].module.css";
 export default function Page() {
   const router = useRouter();
   const movieId = Number(router.query.id);
+  const movieDetail = dummyData.find(({ id }) => id === movieId) as MovieData;
+
+  if (!movieDetail) {
+    return (
+      <div className={style.not_found}>
+        &quot;ID: {movieId}&quot;에 해당하는 영화는 없습니다.
+      </div>
+    );
+  }
+
   const {
     title,
     subTitle,
@@ -18,7 +28,7 @@ export default function Page() {
     genres,
     runtime,
     posterImgUrl,
-  } = dummyData.find(({ id }) => id === movieId) as MovieData;
+  } = movieDetail;
 
   return (
     <div className={style.container}>
