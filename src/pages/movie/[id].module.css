@@ -45,3 +45,9 @@
 .description {
   text-indent: 10px;
 }
+
+.not_found {
+  text-align: center;
+  font-size: large;
+  font-weight: bold;
+}
