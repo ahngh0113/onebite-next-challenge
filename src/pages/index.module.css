@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.movie_items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.recommend_movie_item {
+  flex: 1 1 calc(33% - 5px);
+  max-width: calc(33% - 5px);
+}
+
+.all_movie_item {
+  flex: 1 1 calc(20% - 5px);
+  max-width: calc(20% - 5px);
+}
