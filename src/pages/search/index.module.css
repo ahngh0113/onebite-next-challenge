@@ -1,0 +1,16 @@
+.not_found {
+  text-align: center;
+  font-size: large;
+  font-weight: bold;
+}
+
+.movie_items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.movie_item {
+  flex: 1 1 calc(33% - 5px);
+  max-width: calc(33% - 5px);
+}
