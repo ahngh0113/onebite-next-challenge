@@ -3,15 +3,17 @@
 > [한 입 크기로 잘라먹는 Next.js(15+)](https://www.inflearn.com/course/%ED%95%9C%EC%9E%85-%ED%81%AC%EA%B8%B0-nextjs)강의 학습 후 정리한 내용입니다.
 
 # 목차
-1. [NextJS](#nextJS)
+1. [What NextJS](#what-nextjs)
 2. [pre-rendering](#pre-rendering)
 3. [pre-fetching](#pre-fetching)
 4. [Router](#router)
 5. [API Router](#api-router)
 6. [global layout](#global-layout)
-6. [global layout by page](#global-layout-by-page)
+7. [global layout by page](#global-layout-by-page)
+8. [data fetching](#data-fetching)
+9. [pre-rendering-method-of-next](#pre-rendering-method-of-next)
 
-# NextJS
+# What NextJS
 
 리액트 전용 프레임워크로 리액트의 확장판이라고 생각한다. 리액트는 UI, 즉 View를 위한 라이브러리이다. 그래서 라우팅, 최적화 등 그 외적인 것은 개발자의 역량이다. 그래서 그것들은 좀 더 편리하게 해주기 위해 넥스트가 나왔다고 생각한다. 리액트의 고립된 CSR을 입맛에 맞게 SSR, SSG, 하이드레이션 등의 메커니즘을 도입하여 좀 더 리액트를 맛깔나게 사용할 수 있도록 한다고 생각된다.
 
@@ -229,3 +231,91 @@
   <hr/>
 </details>
 <br>
+
+# data fetching
+기존 리액트에서의 데이터 통신을 알아보면 [초반 pre-rendering](#pre-rendering)에서 이야기 했듯이 FCP이후 JS번들을 통해 TTI가 가능해져서 길어진 랜더링과 그 후에 통신을 하다보니 데이터를 받아오는 시점이 늦게된다. 넥스트의 경우 초반 사전 렌더링 된 화면을 받아 올 때 그 화면에 필요한 데이터까지도 미리 받아서 전달해주는 매커니즘을 가지고 있다. 그 또한 개발자가 설정해 줄 수 있다. 또한 오래걸리는 데이터 패칭도 빌드 타임에 미리 패칭하는 매커니즘도 제공하고 있다. 
+
+정리하면 리액트의 경우 화면 마운트 후 데이터 패칭을 한다면, 넥스트는 사전 렌더링할 때에 데이터 패칭도 발생하게 할 수 있어서 훨씬 빠르게 사용자가 데이터를 패칭할 수 있다.
+
+# pre-rendering method of next
+
+## 1. SSR
+> Server Side Rendering으로, 요청이 들어올 때 사전 렌더링을 진행한다. 
+<details>
+  <summary>Page Router</summary>
+  <hr/>
+  
+  ```jsx
+    export const getServerSideProps = () => {}
+  ```
+  위와 같이 파일 중 컴포넌트 외부에 `getServerSideProps`라는 이름으로 함수를 지정하고 내부에 로직을 적어주면 사전 렌더일 때 컴포넌트의 props로 자동으로 들어간다. 
+
+  ```jsx
+    export const getServerSideProps = () => {
+      const data = 통신으로 받아온 데이터()
+
+      return {
+        props: {
+          data
+        }
+      }
+    }
+  ```
+  `inferGetServerSidePropsType`이라고 자동으로 서버  사이드에서 props로 넘겨주는 데이터 타입을 추론하는 타입을 지원해줘서 편리하게 사용할 수 있다.
+
+  ```jsx
+    //...
+    export const getServerSideProps = () => {
+      const data = 통신으로 받아온 데이터()
+
+      return {
+        props: {
+          data
+        }
+      }
+    }
+
+    //...
+
+    export default Page({
+      data
+    }: inferGetServerSidePropsType<typeof getServerSideProps>)
+
+    //...
+  ```
+
+  `getServerSideProps`는 서버측에서 실행되는 함수이기 때문에 내부에 `console.log()`를 사용해도 클라이언트측인 브라우저에서는 출력되지 않고, 실행시킨 터미널에서 확인 할 수 있다.
+
+  컴포넌트는 총 2번 실행된다. 
+  1. 서버에서 사전 렌더링을 위해
+  2. JS번들을 통해 하이드레이션을 위해
+  그래서 컴포넌트 내부에 `console.log(window)`를 실행 시키면 위의 1번은 서버에서 실행이 될 때에는 `window`가 `undefined`이기 때문에 에러를 보내준다. 그래서 컴포넌트 내부에서 사용할 때에는 `useEffect`를 사용해줘야 한다.
+</details>
+<details>
+  <summary>App Router</summary>
+  <hr/>
+</details>
+
+
+## 2. SSG
+> Static Site Generation, 정적 사이트 생성으로, 빌드 타임에 사전 렌더링을 진행하여 좀 더 정적인 페이지를 접할 수 있다.
+<details>
+  <summary>Page Router</summary>
+  <hr/>
+</details>
+<details>
+  <summary>App Router</summary>
+  <hr/>
+</details>
+
+## 3. ISR
+> Incremental Static Regeneration, 점진적 정적 재생성으로, SSR의 장점과 SSG의 장점만을 살려 미리 렌더링 된 페이지를 보내고 시간이 지나면 새로운 요청을 갱신하는 매커니즘이다.
+
+<details>
+  <summary>Page Router</summary>
+  <hr/>
+</details>
+<details>
+  <summary>App Router</summary>
+  <hr/>
+</details>
