@@ -1,17 +1,31 @@
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 
-import type { MovieData } from "@/typesc";
-
-import dummyData from "@/mocks/dummy.json";
+import fetchOneMovie from "@/utils/fetch-one-movie";
 
 import style from "./[id].module.css";
 
-export default function Page() {
+export const getServerSideProps = async (
+  content: GetServerSidePropsContext
+) => {
+  const movieId = Number(content.params!.id);
+
+  const oneMovie = await fetchOneMovie(movieId);
+
+  return {
+    props: {
+      oneMovie,
+    },
+  };
+};
+
+export default function Page({
+  oneMovie,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const movieId = Number(router.query.id);
-  const movieDetail = dummyData.find(({ id }) => id === movieId) as MovieData;
 
-  if (!movieDetail) {
+  if (!oneMovie) {
     return (
       <div className={style.not_found}>
         &quot;ID: {movieId}&quot;에 해당하는 영화는 없습니다.
@@ -28,7 +42,7 @@ export default function Page() {
     genres,
     runtime,
     posterImgUrl,
-  } = movieDetail;
+  } = oneMovie;
 
   return (
     <div className={style.container}>
