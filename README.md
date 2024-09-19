@@ -299,9 +299,114 @@
 
 ## 2. SSG
 > Static Site Generation, 정적 사이트 생성으로, 빌드 타임에 사전 렌더링을 진행하여 좀 더 정적인 페이지를 접할 수 있다.
+
+SSR은 페이지 요청 시 매번 서버에 새로운 JS렌더링 번들을 요청하고 받아와야 한다. 그말은 서버의 상태가 안좋으면 요청이 늦게 걸릴 수도 있다. 이러한 SSR의 단점을 보안하고자 빌드 타임에 페이지를 미리 만들어두는 메커니즘이다.
+
+SSG의 단점은 빌드 때 페이지가 생성되기 떄문에 실시간 성으로 바뀌는 데이터에 대한 대응이 쉽지 않다.
+
 <details>
   <summary>Page Router</summary>
   <hr/>
+
+  ## 기본 설정
+  ```jsx
+    export const getStaticProps = () => {}
+  ```
+  위와 같이 파일 중 컴포넌트 외부에 `getServerSideProps`라는 이름으로 함수를 지정하고 내부에 로직을 적어주면 사전 렌더일 때 컴포넌트의 props로 자동으로 들어간다. 
+
+  ```jsx
+    export const getStaticProps = () => {
+      const data = 통신으로 받아온 데이터()
+
+      return {
+        props: {
+          data
+        }
+      }
+    }
+  ```
+  `InferGetStaticPropsType`이라고 자동으로 서버 사이드에서 props로 넘겨주는 데이터 타입을 추론하는 타입을 지원해줘서 편리하게 사용할 수 있다.
+
+  ```jsx  
+    //...
+    export const getStaticProps = () => {
+      const data = 통신으로 받아온 데이터()
+
+      return {
+        props: {
+          data
+        }
+      }
+    }
+    //...
+  ```
+
+  SSR과 다르게 `getStaticProps`라는 네이밍을 통해 SSG를 선택할 수 있다.
+
+  ```tsx
+    //...
+    export const getStaticProps = () => {
+      const data = 통신으로 받아온 데이터()
+
+      if(!data) {
+        return {
+          notFound: true
+        }
+      }
+
+      return {
+        props: {
+          data
+        }
+      }
+    }
+    //...
+  ```
+    
+  위와 같이 data가 없을 경우 `Not Found - 404`페이지를 보여주도록 설정 할 수도 있다.
+
+  ```tsx
+    export default Page({
+      data
+    }: InferGetStaticPropsType<typeof getStaticProps>)
+
+    //...
+  ```
+  ## 테스트 하는 법
+  넥스트에서 개발 모드로 실행(`npm run dev`)하면 편의상 새로고침마다 페이지를 새로 만들어서 불러온다. 그래서 SSG를 실제로 경험하려면 `npm run build` 후 `npm run start`를 해줘야 한다.
+
+  ## 동적 페이지 SSG 설정 (like. `[id].tsx`)
+  ```tsx
+    export const getStaticPaths = async () => {
+      return {
+        paths: [
+          // 동적으로 할당할 내용
+          // ex) {params: {id: 12345}}
+        ],
+        // 동적으로 설정한 path가 없을 경우 
+        // 'false', 'blocking', 'true' 중 선택할 수 있다.
+        fallback -> [false, 'blocking', true]
+      }
+    }
+  ```
+
+  ### fallback 타입 설명
+  |타입|설명|
+  |--|--|
+  |false|404페이지가 보여진다.|
+  |'blocking'|SSR을 접목 시킨 방식으로 빌드 타임에 id에 맞게 계산된 페이지가 없을 시 서버에 요청하여 사전 렌더링을 실시한다. <br/> 추가된 데이터 대응에 용이하다. 하지만 SSR의 단점처럼 서버에서 오래걸리면 사용자도 그만큼 기다려야 한다.|
+  |true|일단 데이터가 없는 페이지를 출력 후 서버에 요청하여 사전 렌더링을 실시한다. `'blocking'`과 다른 점은 먼저 데이터가 없는 페이지를 출력하여 FCP를 줄일 수 있다.|
+
+  ## fallback 체킹하는 법
+  ```tsx
+  export default function Page() {
+    //...
+    const isFallback = router.isFallback;
+    //...
+  }
+  ```
+  `router.isFallback`으로 fallback 상태인지 체크할 수 있다.
+
 </details>
 <details>
   <summary>App Router</summary>
@@ -319,3 +424,13 @@
   <summary>App Router</summary>
   <hr/>
 </details>
+
+# npm run build 아이콘 살펴보기
+
+|기호|방식|설명|
+|---|---|---|
+|○  |Static |prerendered as static content, 아무런 설정을 하지 않은 사전 렌더링된 정적인 페이지, SSG|
+|●  |SSG    |prerendered as static HTML (uses getStaticProps), `getStaticProps`를 사용하여 HTML로 사전 렌더링된 페이지, SSG|
+|ƒ  |Dynamic|server-rendered on demand, 브라우저에서 요청을 받을 떄마다 사전 렌더링, SSR|
+
+- 기본적으로 아무 설정을 하지 않으면 SSG방식으로 동작한다.
