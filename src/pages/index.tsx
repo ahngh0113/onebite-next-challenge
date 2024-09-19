@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { InferGetServerSidePropsType } from "next";
+import { InferGetStaticPropsType } from "next";
 import Link from "next/link";
 
 import fetchMovie from "@/utils/fetch-movie";
@@ -10,7 +10,7 @@ import MovieItem from "@/components/movie-item";
 
 import style from "./index.module.css";
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
   const [allMovies, recommendMovies] = await Promise.all([
     fetchMovie(),
     fetchRecommendMovies(),
@@ -26,7 +26,7 @@ export const getServerSideProps = async () => {
 export default function Home({
   allMovies,
   recommendMovies,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <div className={style.container}>
       <section>
