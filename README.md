@@ -12,12 +12,9 @@
 7. [global layout by page](#global-layout-by-page)
 8. [data fetching](#data-fetching)
 9. [pre-rendering-method-of-next](#pre-rendering-method-of-next)
-<br>
-9-1. [SSR](#1-ssr)
-<br>
-9-2. [SSG](#2-ssg)
-<br>
-9-3. [ISR](#3-isr)
+- 9-1. [SSR](#1-ssr)
+- 9-2. [SSG](#2-ssg)
+- 9-3. [ISR](#3-isr)
 10. [build 시 아이콘 살펴보기](#npm-run-build-아이콘-살펴보기)
 11. [페이지별 SEO 설정하기](#페이지별-seo-설정하기)
 
