@@ -46,7 +46,8 @@
   text-indent: 10px;
 }
 
-.not_found {
+.not_found,
+.is_fall_back {
   text-align: center;
   font-size: large;
   font-weight: bold;

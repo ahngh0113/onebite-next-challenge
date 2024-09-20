@@ -3,7 +3,7 @@ import { MovieData } from "@/typesc";
 export default async function fetchOneMovie(
   movieId: number
 ): Promise<MovieData | null> {
-  const url = process.env.NEXT_MOVIE_API_URL;
+  const url = process.env.NEXT_PUBLIC_MOVIE_API_URL;
 
   try {
     const response = await fetch(`${url}/${movieId}`);
