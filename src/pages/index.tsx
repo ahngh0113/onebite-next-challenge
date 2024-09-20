@@ -21,6 +21,7 @@ export const getStaticProps = async () => {
       allMovies,
       recommendMovies,
     },
+    revalidate: 10,
   };
 };
 export default function Home({
