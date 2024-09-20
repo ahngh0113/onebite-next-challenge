@@ -5,6 +5,7 @@ import fetchMovie from "@/utils/fetch-movie";
 import fetchOneMovie from "@/utils/fetch-one-movie";
 
 import style from "./[id].module.css";
+import Head from "next/head";
 
 export const getStaticPaths = async () => {
   const movies = await fetchMovie();
@@ -38,9 +39,20 @@ export default function Page({
 
   if (isFallback) {
     return (
-      <div className={style.is_fall_back}>
-        <p>로딩중입니다.</p>
-      </div>
+      <>
+        <Head>
+          <title>한입 씨네마</title>
+          <meta property="og:image" content="/thumbnail.png" />
+          <meta property="og:title" content="한입 씨네마" />
+          <meta
+            property="og:description"
+            content="한입 씨네마에서 원하는 영화를 찾아보세요."
+          />
+        </Head>
+        <div className={style.is_fall_back}>
+          <p>로딩중입니다.</p>
+        </div>
+      </>
     );
   }
 
@@ -64,20 +76,28 @@ export default function Page({
   } = oneMovie;
 
   return (
-    <div className={style.container}>
-      <div
-        className={style.cover_img_container}
-        style={{ backgroundImage: `url('${posterImgUrl}')` }}
-      >
-        <img src={posterImgUrl} alt={`${title} 포스터 이미지`} />
+    <>
+      <Head>
+        <title>한입 씨네마 | {title}</title>
+        <meta property="og:image" content={posterImgUrl} />
+        <meta property="og:title" content={`한입 씨네마 | ${title}`} />
+        <meta property="og:description" content={description} />
+      </Head>
+      <div className={style.container}>
+        <div
+          className={style.cover_img_container}
+          style={{ backgroundImage: `url('${posterImgUrl}')` }}
+        >
+          <img src={posterImgUrl} alt={`${title} 포스터 이미지`} />
+        </div>
+        <div className={style.title}>{title}</div>
+        <div>
+          {releaseDate} / {genres.join(", ")} / {runtime}분
+        </div>
+        <div>{company}</div>
+        <div className={style.subTitle}>{subTitle}</div>
+        <div className={style.description}>{description}</div>
       </div>
-      <div className={style.title}>{title}</div>
-      <div>
-        {releaseDate} / {genres.join(", ")} / {runtime}분
-      </div>
-      <div>{company}</div>
-      <div className={style.subTitle}>{subTitle}</div>
-      <div className={style.description}>{description}</div>
-    </div>
+    </>
   );
 }

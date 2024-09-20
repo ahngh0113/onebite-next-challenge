@@ -414,16 +414,56 @@ SSG의 단점은 빌드 때 페이지가 생성되기 떄문에 실시간 성으
 </details>
 
 ## 3. ISR
-> Incremental Static Regeneration, 점진적 정적 재생성으로, SSR의 장점과 SSG의 장점만을 살려 미리 렌더링 된 페이지를 보내고 시간이 지나면 새로운 요청을 갱신하는 매커니즘이다.
+> Incremental Static Regeneration, 점진적 정적 재생성으로, SSR의 장점과 SSG의 장점만을 살려 SSG처럼 사전 렌더링 된 페이지를 보내고 시간이 지나면 SSR처럼 요청 후 다시 SSG처럼 페이지를 전달하는 매커니즘이다.
 
 <details>
   <summary>Page Router</summary>
   <hr/>
+  SSG의 방식을 그대로 사용하면서 return의 속성으로 `revalidate`를 넣어주여 value로 시간(초 단위)을 설정해 주면된다.
+
+  ```jsx  
+    //...
+    export const getStaticProps = () => {
+      const data = 통신으로 받아온 데이터()
+
+      return {
+        props: {
+          data
+        },
+        revalidate: 원하는 시간
+      }
+    }
+    //...
+  ```
+
+  ## On-Demand-ISR
+  게시글 같은 경우는 시간마다 수정이 일어나는 것이 아닌 수정을 할때 이루어진다. 이것을 대응하기위해 시간 뿐만 아니라 강제로 업데이트 해주는 방법이 있다.
+
+  ```tsx
+    // pages/api/revalidate.ts
+    import { NextApiRequest, NextApiResponse } from "next";
+
+    export default async function handler(
+      req: NextApiRequest,
+      res: NextApiResponse
+    ) {
+      try {
+        await res.revalidate("/"); // 업데이트 하기 원하는 url
+        return res.json({ revalidate: true });
+      } catch (error) {
+        res.status(500).send("Revalidation Failed");
+      }
+    }
+  ```
+
+  `/api/revalidate`요청을 하면 설정해 놓은 url을 업데이트 해준다.
 </details>
 <details>
   <summary>App Router</summary>
   <hr/>
 </details>
+
+### 3-1. 
 
 # npm run build 아이콘 살펴보기
 
@@ -432,5 +472,28 @@ SSG의 단점은 빌드 때 페이지가 생성되기 떄문에 실시간 성으
 |○  |Static |prerendered as static content, 아무런 설정을 하지 않은 사전 렌더링된 정적인 페이지, SSG|
 |●  |SSG    |prerendered as static HTML (uses getStaticProps), `getStaticProps`를 사용하여 HTML로 사전 렌더링된 페이지, SSG|
 |ƒ  |Dynamic|server-rendered on demand, 브라우저에서 요청을 받을 떄마다 사전 렌더링, SSR|
+| |ISR|incremental static regeneration (uses revalidate in getStaticProps), `getStaticProps`내부에 `revalidate`를 이용하여 ISR 렌더링 설정|
 
 - 기본적으로 아무 설정을 하지 않으면 SSG방식으로 동작한다.
+
+# 페이지별 SEO 설정하기
+
+```tsx
+// index.tsx
+
+import Head from "next/head";
+
+// ...
+
+return (
+  <>
+    <Head>
+      <title>원하는 페이지 title 이름</title>
+      <meta property="og:image" content="/{썸네일 url}" /> -> public이 /로 인지한다.
+      <meta property="og:title" content="{title}" />
+      <meta property="og:description" content="{description}" />
+    </Head>
+    /* ... */
+  </>
+)
+```
