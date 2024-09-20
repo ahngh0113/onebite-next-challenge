@@ -1,9 +1,9 @@
-# Next.JS 
+# Next.JS - Page Router
 
-> [한 입 크기로 잘라먹는 Next.js(15+)](https://www.inflearn.com/course/%ED%95%9C%EC%9E%85-%ED%81%AC%EA%B8%B0-nextjs)강의 학습 후 정리한 내용입니다.
+> [한 입 크기로 잘라먹는 Next.js(15+)](https://www.inflearn.com/course/%ED%95%9C%EC%9E%85-%ED%81%AC%EA%B8%B0-nextjs)강의 학습 후 정리한 내용입니다.(page router)
 
 # 목차
-1. [What NextJS](#what-nextjs)
+1. [NextJS란 무엇인가?](#what-nextjs)
 2. [pre-rendering](#pre-rendering)
 3. [pre-fetching](#pre-fetching)
 4. [Router](#router)
@@ -12,6 +12,14 @@
 7. [global layout by page](#global-layout-by-page)
 8. [data fetching](#data-fetching)
 9. [pre-rendering-method-of-next](#pre-rendering-method-of-next)
+<br>
+9-1. [SSR](#1-ssr)
+<br>
+9-2. [SSG](#2-ssg)
+<br>
+9-3. [ISR](#3-isr)
+10. [build 시 아이콘 살펴보기](#npm-run-build-아이콘-살펴보기)
+11. [페이지별 SEO 설정하기](#페이지별-seo-설정하기)
 
 # What NextJS
 
@@ -83,27 +91,17 @@
 
 # Router
 
-넥스트의 라우터 방법은 2가지가 있다. 페이지 라우터(page router)와 앱 라우터(app router)이다. 초기부터 채택한 방법은 페이지 라우터인데 넥스트13버전부터 앱 라우터를 도입하였다. 
+> 넥스트의 라우터 방법은 2가지가 있다. 페이지 라우터(page router)와 앱 라우터(app router)이다. 초기부터 채택한 방법은 페이지 라우터인데 넥스트13버전부터 앱 라우터를 도입하였다. 
 
-<details>
-  <summary>Page Router</summary>
-  <hr/>
-  페이지 라우터는 pages라는 폴더를 기반으로 라우팅 되는 것이다.
+페이지 라우터는 pages라는 폴더를 기반으로 라우팅 되는 것이다.
 
-  예를 들어 /pages라는 폴더 아래에 ‘/index’ ‘/movie’ ‘/info’라는 파일이 있으면 ‘~/’ ‘~/movie’ ‘~/info’ 라는 path가 주어진다.
+예를 들어 /pages라는 폴더 아래에 ‘/index’ ‘/movie’ ‘/info’라는 파일이 있으면 ‘~/’ ‘~/movie’ ‘~/info’ 라는 path가 주어진다.
 
-  또는 /pages라는 폴더 아래에 ‘/index’ ‘/movie/index’ ‘/info/index’라는 폴더 및 파일이 있으면 ‘~/’ ‘~/movie’ ‘~/info’ 라는 path가 주어진다.
+또는 /pages라는 폴더 아래에 ‘/index’ ‘/movie/index’ ‘/info/index’라는 폴더 및 파일이 있으면 ‘~/’ ‘~/movie’ ‘~/info’ 라는 path가 주어진다.
 
-  [id]라는 파일 명을 통해 동적 경로 설정도 가능하다. 여기서 id라는 이름을 개발자가 커스텀할 수 있다.
+[id]라는 파일 명을 통해 동적 경로 설정도 가능하다. 여기서 id라는 이름을 개발자가 커스텀할 수 있다.
 
-  또한 ~/book/123/ㅁㄴㅇ/123/ㅁㄴㅇ 처럼 경로 뒤에 여러가지 올 경우를 대비하기 위해서는 […id]로 이름을 지어주면 된다. 이것을 “catch all segment”라고 부른다. 하지만 여기서 ~/book으로 이동하면 404에러가 뜬다. index파일을 따로 만들어줄 수 있지만 하나로 모두 관리하고 싶다면 [[…id]]로 만들면 정상적으로 동작시킬 수 있다. 이를 “optional catch all segment”라고 불린다.
-</details>
-
-<details>
-  <summary>App Router</summary>
-  <hr/>
-</details>
-<br>
+또한 ~/book/123/ㅁㄴㅇ/123/ㅁㄴㅇ 처럼 경로 뒤에 여러가지 올 경우를 대비하기 위해서는 […id]로 이름을 지어주면 된다. 이것을 “catch all segment”라고 부른다. 하지만 여기서 ~/book으로 이동하면 404에러가 뜬다. index파일을 따로 만들어줄 수 있지만 하나로 모두 관리하고 싶다면 [[…id]]로 만들면 정상적으로 동작시킬 수 있다. 이를 “optional catch all segment”라고 불린다.
 
 # API Router
 
@@ -118,118 +116,100 @@
 
 > 전체 페이지 공통으로 필요한 레이아웃을 설정할 수 있다.
 
-<details>
-  <summary>Page Router</summary>
-  <hr/>
-  src/pages/_app에서 설정할 수 있다.
+src/pages/_app에서 설정할 수 있다.
 
-  기본적으로 전역적으로 사용할 레이아웃은 따로 컴포넌트를 만들어줘서 관리한다. 나는 ‘GlobalLayout’이라는 이름으로 뺴줬다.
+기본적으로 전역적으로 사용할 레이아웃은 따로 컴포넌트를 만들어줘서 관리한다. 나는 ‘GlobalLayout’이라는 이름으로 뺴줬다.
 
-  ```jsx
-  // _app
+```jsx
+// _app
 
-  import type { AppProps } from "next/app";
+import type { AppProps } from "next/app";
 
-  import GlobalLayout from "@/components/global-layout";
-  import "@/styles/globals.css";
+import GlobalLayout from "@/components/global-layout";
+import "@/styles/globals.css";
 
-  export default function App({ Component, pageProps }: AppProps) {
-    return (
-      <GlobalLayout>
-        <Component {...pageProps} />
-      </GlobalLayout>
-    );
-  }
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <GlobalLayout>
+      <Component {...pageProps} />
+    </GlobalLayout>
+  );
+}
 
-  ```
+```
 
-  ```jsx
-  // GlobalLayout
+```jsx
+// GlobalLayout
 
-  import React from "react";
-  import Link from "next/link";
+import React from "react";
+import Link from "next/link";
 
-  import style from "./global-layout.module.css";
+import style from "./global-layout.module.css";
 
-  function GlobaLayout({ children }: { children: React.ReactNode }) {
-    return (
-      <div className={style.container}>
-        <header className={style.header}>
-          <Link href={"/"}>
-            <h1>ONEBITE CINEMA</h1>
-          </Link>
-        </header>
-        <main>{children}</main>
-      </div>
-    );
-  }
+function GlobaLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className={style.container}>
+      <header className={style.header}>
+        <Link href={"/"}>
+          <h1>ONEBITE CINEMA</h1>
+        </Link>
+      </header>
+      <main>{children}</main>
+    </div>
+  );
+}
 
-  export default GlobaLayout;
+export default GlobaLayout;
 
-  ```
-</details>
-
-<details>
-  <summary>App Router</summary>
-  <hr/>
-</details>
-<br>
+```
 
 # global layout by page
 
 > 페이지별로 필요한 레이아웃을 설정할 수 있다.
 
-<details>
-  <summary>Page Router</summary>
-  <hr>
-  _app과 해당 레이아웃을 적용할 페이지 두 곳에 설정을 해줘야한다.
+_app과 해당 레이아웃을 적용할 페이지 두 곳에 설정을 해줘야한다.
 
-  getLayout()라는 함수를 통해 사용될 페이지 컴포넌트에 해당 레이아웃을 적용하는 것을 하단에 해줘야한다. 그 후 _app에서도 getLayout에 맞는 컴포넌트를 자동으로 대입하도록 설정을 해줘야 한다.
+getLayout()라는 함수를 통해 사용될 페이지 컴포넌트에 해당 레이아웃을 적용하는 것을 하단에 해줘야한다. 그 후 _app에서도 getLayout에 맞는 컴포넌트를 자동으로 대입하도록 설정을 해줘야 한다.
 
-  ```jsx
-  // _app
+```jsx
+// _app
 
-  import { ReactNode } from "react";
-  import { NextPage } from "next";
+import { ReactNode } from "react";
+import { NextPage } from "next";
 
-  import type { AppProps } from "next/app";
+import type { AppProps } from "next/app";
 
-  import GlobalLayout from "@/components/global-layout";
-  import "@/styles/globals.css";
+import GlobalLayout from "@/components/global-layout";
+import "@/styles/globals.css";
 
-  type NextPageWithLayout = NextPage & {
-    getLayout?: (page: ReactNode) => ReactNode;
-  };
+type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactNode) => ReactNode;
+};
 
-  export default function App({
-    Component,
-    pageProps,
-  }: AppProps & {
-    Component: NextPageWithLayout;
-  }) {
-    const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
+export default function App({
+  Component,
+  pageProps,
+}: AppProps & {
+  Component: NextPageWithLayout;
+}) {
+  const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
 
-    return <GlobalLayout>{getLayout(<Component {...pageProps} />)}</GlobalLayout>;
-  }
+  return <GlobalLayout>{getLayout(<Component {...pageProps} />)}</GlobalLayout>;
+}
 
-  ```
+```
 
-  ```jsx
-  // serch
+```jsx
+// serch
 
-  export default function Page() {
-  // ...
-  }
+export default function Page() {
+// ...
+}
 
-  Page.getLayout = (page: ReactNode) => {
-    return <SearchableLayout>{page}</SearchableLayout>;
-  };
-  ```
-</details>
-<details>
-  <summary>App Router</summary>
-  <hr/>
-</details>
+Page.getLayout = (page: ReactNode) => {
+  return <SearchableLayout>{page}</SearchableLayout>;
+};
+```
 <br>
 
 # data fetching
@@ -241,61 +221,53 @@
 
 ## 1. SSR
 > Server Side Rendering으로, 요청이 들어올 때 사전 렌더링을 진행한다. 
-<details>
-  <summary>Page Router</summary>
-  <hr/>
   
-  ```jsx
-    export const getServerSideProps = () => {}
-  ```
-  위와 같이 파일 중 컴포넌트 외부에 `getServerSideProps`라는 이름으로 함수를 지정하고 내부에 로직을 적어주면 사전 렌더일 때 컴포넌트의 props로 자동으로 들어간다. 
+```jsx
+  export const getServerSideProps = () => {}
+```
+위와 같이 파일 중 컴포넌트 외부에 `getServerSideProps`라는 이름으로 함수를 지정하고 내부에 로직을 적어주면 사전 렌더일 때 컴포넌트의 props로 자동으로 들어간다. 
 
-  ```jsx
-    export const getServerSideProps = () => {
-      const data = 통신으로 받아온 데이터()
+```jsx
+  export const getServerSideProps = () => {
+    const data = 통신으로 받아온 데이터()
 
-      return {
-        props: {
-          data
-        }
+    return {
+      props: {
+        data
       }
     }
-  ```
-  `inferGetServerSidePropsType`이라고 자동으로 서버  사이드에서 props로 넘겨주는 데이터 타입을 추론하는 타입을 지원해줘서 편리하게 사용할 수 있다.
+  }
+```
+`inferGetServerSidePropsType`이라고 자동으로 서버  사이드에서 props로 넘겨주는 데이터 타입을 추론하는 타입을 지원해줘서 편리하게 사용할 수 있다.
 
-  ```jsx
-    //...
-    export const getServerSideProps = () => {
-      const data = 통신으로 받아온 데이터()
+```jsx
+  //...
+  export const getServerSideProps = () => {
+    const data = 통신으로 받아온 데이터()
 
-      return {
-        props: {
-          data
-        }
+    return {
+      props: {
+        data
       }
     }
+  }
 
-    //...
+  //...
 
-    export default Page({
-      data
-    }: inferGetServerSidePropsType<typeof getServerSideProps>)
+  export default Page({
+    data
+  }: inferGetServerSidePropsType<typeof getServerSideProps>)
 
-    //...
-  ```
+  //...
+```
 
-  `getServerSideProps`는 서버측에서 실행되는 함수이기 때문에 내부에 `console.log()`를 사용해도 클라이언트측인 브라우저에서는 출력되지 않고, 실행시킨 터미널에서 확인 할 수 있다.
+`getServerSideProps`는 서버측에서 실행되는 함수이기 때문에 내부에 `console.log()`를 사용해도 클라이언트측인 브라우저에서는 출력되지 않고, 실행시킨 터미널에서 확인 할 수 있다.
 
-  컴포넌트는 총 2번 실행된다. 
-  1. 서버에서 사전 렌더링을 위해
-  2. JS번들을 통해 하이드레이션을 위해
-  그래서 컴포넌트 내부에 `console.log(window)`를 실행 시키면 위의 1번은 서버에서 실행이 될 때에는 `window`가 `undefined`이기 때문에 에러를 보내준다. 그래서 컴포넌트 내부에서 사용할 때에는 `useEffect`를 사용해줘야 한다.
-</details>
-<details>
-  <summary>App Router</summary>
-  <hr/>
-</details>
-
+컴포넌트는 총 2번 실행된다. 
+1. 서버에서 사전 렌더링을 위해
+2. JS번들을 통해 하이드레이션을 위해
+그래서 컴포넌트 내부에 `console.log(window)`를 실행 시키면 위의 1번은 서버에서 실행이 될 때에는 `window`가 `undefined`이기 때문에 에러를 보내준다. 그래서 컴포넌트 내부에서 사용할 때에는 `useEffect`를 사용해줘야 한다.
+<br>
 
 ## 2. SSG
 > Static Site Generation, 정적 사이트 생성으로, 빌드 타임에 사전 렌더링을 진행하여 좀 더 정적인 페이지를 접할 수 있다.
@@ -304,166 +276,148 @@ SSR은 페이지 요청 시 매번 서버에 새로운 JS렌더링 번들을 요
 
 SSG의 단점은 빌드 때 페이지가 생성되기 떄문에 실시간 성으로 바뀌는 데이터에 대한 대응이 쉽지 않다.
 
-<details>
-  <summary>Page Router</summary>
-  <hr/>
+## 기본 설정
+```jsx
+  export const getStaticProps = () => {}
+```
+위와 같이 파일 중 컴포넌트 외부에 `getServerSideProps`라는 이름으로 함수를 지정하고 내부에 로직을 적어주면 사전 렌더일 때 컴포넌트의 props로 자동으로 들어간다. 
 
-  ## 기본 설정
-  ```jsx
-    export const getStaticProps = () => {}
-  ```
-  위와 같이 파일 중 컴포넌트 외부에 `getServerSideProps`라는 이름으로 함수를 지정하고 내부에 로직을 적어주면 사전 렌더일 때 컴포넌트의 props로 자동으로 들어간다. 
+```jsx
+  export const getStaticProps = () => {
+    const data = 통신으로 받아온 데이터()
 
-  ```jsx
-    export const getStaticProps = () => {
-      const data = 통신으로 받아온 데이터()
-
-      return {
-        props: {
-          data
-        }
+    return {
+      props: {
+        data
       }
     }
-  ```
-  `InferGetStaticPropsType`이라고 자동으로 서버 사이드에서 props로 넘겨주는 데이터 타입을 추론하는 타입을 지원해줘서 편리하게 사용할 수 있다.
-
-  ```jsx  
-    //...
-    export const getStaticProps = () => {
-      const data = 통신으로 받아온 데이터()
-
-      return {
-        props: {
-          data
-        }
-      }
-    }
-    //...
-  ```
-
-  SSR과 다르게 `getStaticProps`라는 네이밍을 통해 SSG를 선택할 수 있다.
-
-  ```tsx
-    //...
-    export const getStaticProps = () => {
-      const data = 통신으로 받아온 데이터()
-
-      if(!data) {
-        return {
-          notFound: true
-        }
-      }
-
-      return {
-        props: {
-          data
-        }
-      }
-    }
-    //...
-  ```
-    
-  위와 같이 data가 없을 경우 `Not Found - 404`페이지를 보여주도록 설정 할 수도 있다.
-
-  ```tsx
-    export default Page({
-      data
-    }: InferGetStaticPropsType<typeof getStaticProps>)
-
-    //...
-  ```
-  ## 테스트 하는 법
-  넥스트에서 개발 모드로 실행(`npm run dev`)하면 편의상 새로고침마다 페이지를 새로 만들어서 불러온다. 그래서 SSG를 실제로 경험하려면 `npm run build` 후 `npm run start`를 해줘야 한다.
-
-  ## 동적 페이지 SSG 설정 (like. `[id].tsx`)
-  ```tsx
-    export const getStaticPaths = async () => {
-      return {
-        paths: [
-          // 동적으로 할당할 내용
-          // ex) {params: {id: 12345}}
-        ],
-        // 동적으로 설정한 path가 없을 경우 
-        // 'false', 'blocking', 'true' 중 선택할 수 있다.
-        fallback -> [false, 'blocking', true]
-      }
-    }
-  ```
-
-  ### fallback 타입 설명
-  |타입|설명|
-  |--|--|
-  |false|404페이지가 보여진다.|
-  |'blocking'|SSR을 접목 시킨 방식으로 빌드 타임에 id에 맞게 계산된 페이지가 없을 시 서버에 요청하여 사전 렌더링을 실시한다. <br/> 추가된 데이터 대응에 용이하다. 하지만 SSR의 단점처럼 서버에서 오래걸리면 사용자도 그만큼 기다려야 한다.|
-  |true|일단 데이터가 없는 페이지를 출력 후 서버에 요청하여 사전 렌더링을 실시한다. `'blocking'`과 다른 점은 먼저 데이터가 없는 페이지를 출력하여 FCP를 줄일 수 있다.|
-
-  ## fallback 체킹하는 법
-  ```tsx
-  export default function Page() {
-    //...
-    const isFallback = router.isFallback;
-    //...
   }
-  ```
-  `router.isFallback`으로 fallback 상태인지 체크할 수 있다.
+```
+`InferGetStaticPropsType`이라고 자동으로 서버 사이드에서 props로 넘겨주는 데이터 타입을 추론하는 타입을 지원해줘서 편리하게 사용할 수 있다.
 
-</details>
-<details>
-  <summary>App Router</summary>
-  <hr/>
-</details>
+```jsx  
+  //...
+  export const getStaticProps = () => {
+    const data = 통신으로 받아온 데이터()
+
+    return {
+      props: {
+        data
+      }
+    }
+  }
+  //...
+```
+
+SSR과 다르게 `getStaticProps`라는 네이밍을 통해 SSG를 선택할 수 있다.
+
+```tsx
+  //...
+  export const getStaticProps = () => {
+    const data = 통신으로 받아온 데이터()
+
+    if(!data) {
+      return {
+        notFound: true
+      }
+    }
+
+    return {
+      props: {
+        data
+      }
+    }
+  }
+  //...
+```
+  
+위와 같이 data가 없을 경우 `Not Found - 404`페이지를 보여주도록 설정 할 수도 있다.
+
+```tsx
+  export default Page({
+    data
+  }: InferGetStaticPropsType<typeof getStaticProps>)
+
+  //...
+```
+## 테스트 하는 법
+넥스트에서 개발 모드로 실행(`npm run dev`)하면 편의상 새로고침마다 페이지를 새로 만들어서 불러온다. 그래서 SSG를 실제로 경험하려면 `npm run build` 후 `npm run start`를 해줘야 한다.
+
+## 동적 페이지 SSG 설정 (like. `[id].tsx`)
+```tsx
+  export const getStaticPaths = async () => {
+    return {
+      paths: [
+        // 동적으로 할당할 내용
+        // ex) {params: {id: 12345}}
+      ],
+      // 동적으로 설정한 path가 없을 경우 
+      // 'false', 'blocking', 'true' 중 선택할 수 있다.
+      fallback -> [false, 'blocking', true]
+    }
+  }
+```
+
+### fallback 타입 설명
+|타입|설명|
+|--|--|
+|false|404페이지가 보여진다.|
+|'blocking'|SSR을 접목 시킨 방식으로 빌드 타임에 id에 맞게 계산된 페이지가 없을 시 서버에 요청하여 사전 렌더링을 실시한다. <br/> 추가된 데이터 대응에 용이하다. 하지만 SSR의 단점처럼 서버에서 오래걸리면 사용자도 그만큼 기다려야 한다.|
+|true|일단 데이터가 없는 페이지를 출력 후 서버에 요청하여 사전 렌더링을 실시한다. `'blocking'`과 다른 점은 먼저 데이터가 없는 페이지를 출력하여 FCP를 줄일 수 있다.|
+
+## fallback 체킹하는 법
+```tsx
+export default function Page() {
+  //...
+  const isFallback = router.isFallback;
+  //...
+}
+```
+`router.isFallback`으로 fallback 상태인지 체크할 수 있다.
+<br>
 
 ## 3. ISR
 > Incremental Static Regeneration, 점진적 정적 재생성으로, SSR의 장점과 SSG의 장점만을 살려 SSG처럼 사전 렌더링 된 페이지를 보내고 시간이 지나면 SSR처럼 요청 후 다시 SSG처럼 페이지를 전달하는 매커니즘이다.
 
-<details>
-  <summary>Page Router</summary>
-  <hr/>
-  SSG의 방식을 그대로 사용하면서 return의 속성으로 `revalidate`를 넣어주여 value로 시간(초 단위)을 설정해 주면된다.
+SSG의 방식을 그대로 사용하면서 return의 속성으로 `revalidate`를 넣어주여 value로 시간(초 단위)을 설정해 주면된다.
 
-  ```jsx  
-    //...
-    export const getStaticProps = () => {
-      const data = 통신으로 받아온 데이터()
+```jsx  
+  //...
+  export const getStaticProps = () => {
+    const data = 통신으로 받아온 데이터()
 
-      return {
-        props: {
-          data
-        },
-        revalidate: 원하는 시간
-      }
+    return {
+      props: {
+        data
+      },
+      revalidate: 원하는 시간
     }
-    //...
-  ```
+  }
+  //...
+```
 
-  ## On-Demand-ISR
-  게시글 같은 경우는 시간마다 수정이 일어나는 것이 아닌 수정을 할때 이루어진다. 이것을 대응하기위해 시간 뿐만 아니라 강제로 업데이트 해주는 방법이 있다.
+## On-Demand-ISR
+게시글 같은 경우는 시간마다 수정이 일어나는 것이 아닌 수정을 할때 이루어진다. 이것을 대응하기위해 시간 뿐만 아니라 강제로 업데이트 해주는 방법이 있다.
 
-  ```tsx
-    // pages/api/revalidate.ts
-    import { NextApiRequest, NextApiResponse } from "next";
+```tsx
+  // pages/api/revalidate.ts
+  import { NextApiRequest, NextApiResponse } from "next";
 
-    export default async function handler(
-      req: NextApiRequest,
-      res: NextApiResponse
-    ) {
-      try {
-        await res.revalidate("/"); // 업데이트 하기 원하는 url
-        return res.json({ revalidate: true });
-      } catch (error) {
-        res.status(500).send("Revalidation Failed");
-      }
+  export default async function handler(
+    req: NextApiRequest,
+    res: NextApiResponse
+  ) {
+    try {
+      await res.revalidate("/"); // 업데이트 하기 원하는 url
+      return res.json({ revalidate: true });
+    } catch (error) {
+      res.status(500).send("Revalidation Failed");
     }
-  ```
+  }
+```
 
-  `/api/revalidate`요청을 하면 설정해 놓은 url을 업데이트 해준다.
-</details>
-<details>
-  <summary>App Router</summary>
-  <hr/>
-</details>
-
-### 3-1. 
+`/api/revalidate`요청을 하면 설정해 놓은 url을 업데이트 해준다.
+<br>
 
 # npm run build 아이콘 살펴보기
 

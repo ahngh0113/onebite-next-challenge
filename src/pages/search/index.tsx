@@ -40,9 +40,9 @@ export default function Page() {
   return (
     <>
       <Head>
-        <title>한입 씨네마 | {q}</title>
+        <title>한입 씨네마 | 검색 결과</title>
         <meta property="og:image" content="/thumbnail.png" />
-        <meta property="og:title" content={`한입 씨네마 | ${q}`} />
+        <meta property="og:title" content="한입 씨네마 | 검색결과" />
         <meta
           property="og:description"
           content="한입 씨네마에서 원하는 영화를 찾아보세요."
