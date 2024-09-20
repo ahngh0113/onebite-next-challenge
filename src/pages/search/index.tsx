@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Head from "next/head";
 
 import fetchMovie from "@/utils/fetch-movie";
 
@@ -37,19 +38,30 @@ export default function Page() {
     );
   }
   return (
-    <div className={style.movie_items}>
-      {searchMovieDate.map((movie) => {
-        return (
-          <Link
-            href={`/movie/${movie.id}`}
-            key={movie.id}
-            className={style.movie_item}
-          >
-            <MovieItem {...movie} />
-          </Link>
-        );
-      })}
-    </div>
+    <>
+      <Head>
+        <title>한입 씨네마 | {q}</title>
+        <meta property="og:image" content="/thumbnail.png" />
+        <meta property="og:title" content={`한입 씨네마 | ${q}`} />
+        <meta
+          property="og:description"
+          content="한입 씨네마에서 원하는 영화를 찾아보세요."
+        />
+      </Head>
+      <div className={style.movie_items}>
+        {searchMovieDate.map((movie) => {
+          return (
+            <Link
+              href={`/movie/${movie.id}`}
+              key={movie.id}
+              className={style.movie_item}
+            >
+              <MovieItem {...movie} />
+            </Link>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
